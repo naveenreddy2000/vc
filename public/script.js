@@ -86,9 +86,10 @@ const addVideoStream = (video, userName, stream) => {
     video.play();
     let ele = document.createElement("div");
     ele.append(video);
-    let p2 = document.createElement('p');
+    let p2 = document.createElement('h6');
     if (userName)
       p2.innerHTML = userName;
+    p2.style.color = 'white';
     ele.append(p2);
     videoGrid.append(ele);
   });
