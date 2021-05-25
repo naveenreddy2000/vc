@@ -22,11 +22,18 @@ showChat.addEventListener("click", () => {
 const user = prompt("Enter your name");
 var peers = {}
 
+//  for production
 var peer = new Peer(undefined, {
   path: "/peerjs",
   host: "/",
   port: "443",
 });
+
+/*var peer = new Peer(undefined, {
+  path: "/peerjs",
+  host: "localhost",
+  port: "3000",
+});*/
 
 let myVideoStream;
 navigator.mediaDevices
@@ -37,19 +44,19 @@ navigator.mediaDevices
   .then((stream) => {
     console.log(stream);
     myVideoStream = stream;
-    addVideoStream(myVideo, stream);
+    addVideoStream(myVideo, null, stream);
 
     peer.on("call", (call) => {
       console.log(call);
       call.answer(stream);
       const video = document.createElement("video");
       call.on("stream", (userVideoStream) => {
-        addVideoStream(video, userVideoStream);
+        addVideoStream(video, null, userVideoStream);
       });
     });
 
-    socket.on("user-connected", (userId) => {
-      connectToNewUser(userId, stream);
+    socket.on("user-connected", (userId, userName) => {
+      connectToNewUser(userId, userName, stream);
     });
 
     socket.on('user-disconnected', userId => {
@@ -57,11 +64,11 @@ navigator.mediaDevices
     })
   });
 
-const connectToNewUser = (userId, stream) => {
+const connectToNewUser = (userId, userName, stream) => {
   const call = peer.call(userId, stream);
   const video = document.createElement("video");
   call.on("stream", (userVideoStream) => {
-    addVideoStream(video, userVideoStream);
+    addVideoStream(video, userName, userVideoStream);
   });
   call.on('close', () => {
     video.remove()
@@ -73,11 +80,17 @@ peer.on("open", (id) => {
   socket.emit("join-room", ROOM_ID, id, user);
 });
 
-const addVideoStream = (video, stream) => {
+const addVideoStream = (video, userName, stream) => {
   video.srcObject = stream;
   video.addEventListener("loadedmetadata", () => {
     video.play();
-    videoGrid.append(video);
+    let ele = document.createElement("div");
+    ele.append(video);
+    let p2 = document.createElement('p');
+    if (userName)
+      p2.innerHTML = userName;
+    ele.append(p2);
+    videoGrid.append(ele);
   });
 };
 
@@ -102,6 +115,7 @@ text.addEventListener("keydown", (e) => {
 const inviteButton = document.querySelector("#inviteButton");
 const muteButton = document.querySelector("#muteButton");
 const stopVideo = document.querySelector("#stopVideo");
+
 muteButton.addEventListener("click", () => {
   const enabled = myVideoStream.getAudioTracks()[0].enabled;
   if (enabled) {
