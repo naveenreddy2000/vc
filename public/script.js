@@ -20,6 +20,7 @@ showChat.addEventListener("click", () => {
 });
 
 const user = prompt("Enter your name");
+var peers = {}
 
 var peer = new Peer(undefined, {
   path: "/peerjs",
@@ -34,10 +35,12 @@ navigator.mediaDevices
     video: true,
   })
   .then((stream) => {
+    console.log(stream);
     myVideoStream = stream;
     addVideoStream(myVideo, stream);
 
     peer.on("call", (call) => {
+      console.log(call);
       call.answer(stream);
       const video = document.createElement("video");
       call.on("stream", (userVideoStream) => {
@@ -48,6 +51,10 @@ navigator.mediaDevices
     socket.on("user-connected", (userId) => {
       connectToNewUser(userId, stream);
     });
+
+    socket.on('user-disconnected', userId => {
+      if (peers[userId]) peers[userId].close()
+    })
   });
 
 const connectToNewUser = (userId, stream) => {
@@ -56,6 +63,10 @@ const connectToNewUser = (userId, stream) => {
   call.on("stream", (userVideoStream) => {
     addVideoStream(video, userVideoStream);
   });
+  call.on('close', () => {
+    video.remove()
+  })
+  peers[userId] = call
 };
 
 peer.on("open", (id) => {
@@ -132,9 +143,8 @@ socket.on("createMessage", (message, userName) => {
   messages.innerHTML =
     messages.innerHTML +
     `<div class="message">
-        <b><i class="far fa-user-circle"></i> <span> ${
-          userName === user ? "me" : userName
-        }</span> </b>
+        <b><i class="far fa-user-circle"></i> <span> ${userName === user ? "me" : userName
+    }</span> </b>
         <span>${message}</span>
     </div>`;
 });
