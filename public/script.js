@@ -23,17 +23,17 @@ const user = prompt("Enter your name");
 var peers = {}
 
 //  for production
-/*var peer = new Peer(undefined, {
+var peer = new Peer(undefined, {
   path: "/peerjs",
   host: "/",
   port: "443",
-});*/
+});
 
-var peer = new Peer(undefined, {
+/*var peer = new Peer(undefined, {
   path: "/peerjs",
   host: "localhost",
   port: "3000",
-});
+});*/
 
 let myVideoStream;
 navigator.mediaDevices
@@ -73,7 +73,7 @@ const connectToNewUser = (userId, userName, stream) => {
     addVideoStream(video, userName, userVideoStream);
   });
   call.on('close', () => {
-    video.remove()
+    video.remove();
   })
   peers[userId] = call
 };
