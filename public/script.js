@@ -23,17 +23,17 @@ const user = prompt("Enter your name");
 var peers = {}
 
 //  for production
-var peer = new Peer(undefined, {
+/*var peer = new Peer(undefined, {
   path: "/peerjs",
   host: "/",
   port: "443",
-});
+});*/
 
-/*var peer = new Peer(undefined, {
+var peer = new Peer(undefined, {
   path: "/peerjs",
   host: "localhost",
   port: "3000",
-});*/
+});
 
 let myVideoStream;
 navigator.mediaDevices
@@ -42,12 +42,14 @@ navigator.mediaDevices
     video: true,
   })
   .then((stream) => {
-    console.log(stream);
+    console.log(2);
+    //console.log(stream);
     myVideoStream = stream;
     addVideoStream(myVideo, null, stream);
 
     peer.on("call", (call) => {
-      console.log(call);
+      //console.log(call);
+      console.log(3);
       call.answer(stream);
       const video = document.createElement("video");
       call.on("stream", (userVideoStream) => {
@@ -77,6 +79,7 @@ const connectToNewUser = (userId, userName, stream) => {
 };
 
 peer.on("open", (id) => {
+  console.log(1);
   socket.emit("join-room", ROOM_ID, id, user);
 });
 
@@ -86,7 +89,7 @@ const addVideoStream = (video, userName, stream) => {
     video.play();
     let ele = document.createElement("div");
     ele.append(video);
-    let p2 = document.createElement('h6');
+    let p2 = document.createElement('b');
     if (userName)
       p2.innerHTML = userName;
     p2.style.color = 'white';
@@ -149,7 +152,7 @@ stopVideo.addEventListener("click", () => {
 
 inviteButton.addEventListener("click", (e) => {
   prompt(
-    "Copy this link and send it to people you want to meet with",
+    "Copy this link and send it to people you want to chat with",
     window.location.href
   );
 });
