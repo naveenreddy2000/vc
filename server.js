@@ -24,14 +24,18 @@ app.get("/:room", (req, res) => {
   res.render("room", { roomId: req.params.room });
 });
 
+let curUsers = {};
+
 io.on("connection", (socket) => {
   socket.on("join-room", (roomId, userId, userName) => {
+    curUsers[userId] = userName;
     socket.join(roomId);
-    socket.to(roomId).broadcast.emit("user-connected", userId, userName);
+    socket.to(roomId).broadcast.emit("user-connected", userId, userName, curUsers);
     socket.on("message", (message) => {
       io.to(roomId).emit("createMessage", message, userName);
     });
     socket.on('disconnect', () => {
+      curUsers[userId] = null;
       socket.to(roomId).broadcast.emit('user-disconnected', userId)
     })
   });

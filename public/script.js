@@ -45,11 +45,12 @@ navigator.mediaDevices
     console.log(2);
     //console.log(stream);
     myVideoStream = stream;
-    addVideoStream(myVideo, null, stream);
+    addVideoStream(myVideo, "You", stream);
 
     peer.on("call", (call) => {
       //console.log(call);
       console.log(3);
+      console.log(call);
       call.answer(stream);
       const video = document.createElement("video");
       call.on("stream", (userVideoStream) => {
@@ -57,9 +58,9 @@ navigator.mediaDevices
       });
     });
 
-    socket.on("user-connected", (userId, userName) => {
+    socket.on("user-connected", (userId, userName, curUsers) => {
       console.log(4);
-      connectToNewUser(userId, userName, stream);
+      connectToNewUser(userId, userName, stream, curUsers);
     });
 
     socket.on('user-disconnected', userId => {
@@ -67,11 +68,11 @@ navigator.mediaDevices
     })
   });
 
-const connectToNewUser = (userId, userName, stream) => {
+const connectToNewUser = (userId, userName, stream, curUsers) => {
   const call = peer.call(userId, stream);
   const video = document.createElement("video");
   call.on("stream", (userVideoStream) => {
-    addVideoStream(video, userName, userVideoStream);
+    addVideoStream(video, curUsers[userId], userVideoStream);
   });
   call.on('close', () => {
     video.remove();
