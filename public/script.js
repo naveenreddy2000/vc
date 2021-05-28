@@ -56,9 +56,6 @@ navigator.mediaDevices
       call.on("stream", (userVideoStream) => {
         addVideoStream(video, null, userVideoStream);
       });
-      call.on('close', () => {
-        video.remove();
-      })
     });
 
     socket.on("user-connected", (userId, userName) => {
@@ -67,7 +64,11 @@ navigator.mediaDevices
     });
 
     socket.on('user-disconnected', userId => {
-      if (peers[userId]) peers[userId].close()
+      if (peers[userId]) peers[userId].close();
+      const call = peer.call(userId, stream);
+      call.on('close', () => {
+        video.remove();
+      })
     })
   });
 
@@ -85,6 +86,7 @@ const connectToNewUser = (userId, userName, stream) => {
 
 peer.on("open", (id) => {
   console.log(1);
+  console.log('userID: ' + id);
   socket.emit("join-room", ROOM_ID, id, user);
 });
 
