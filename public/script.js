@@ -61,13 +61,10 @@ navigator.mediaDevices
       call.on('close', () => {
         video.remove();
       })
-      var conn = peer.connect(call.peer);
-      conn.on('open', () => {
-        conn.on('data', (data) => {
-          console.log('Received', data);
-          const userName = data;
-          peers[call.peer] = { call, userName };
-        });
+      peer.on('data', (data) => {
+        console.log('Received ', data);
+        const userName = data;
+        peers[call.peer] = { call, userName };
       });
       console.log(peers);
     });
