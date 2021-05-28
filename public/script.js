@@ -56,6 +56,9 @@ navigator.mediaDevices
       call.on("stream", (userVideoStream) => {
         addVideoStream(video, null, userVideoStream);
       });
+      console.log(call);
+      peers[call.peer] = call;
+      console.log(call.peer);
     });
 
     socket.on("user-connected", (userId, userName) => {
@@ -65,10 +68,6 @@ navigator.mediaDevices
 
     socket.on('user-disconnected', userId => {
       if (peers[userId]) peers[userId].close();
-      const call = peer.call(userId, stream);
-      call.on('close', () => {
-        video.remove();
-      })
     })
   });
 
