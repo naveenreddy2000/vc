@@ -56,9 +56,10 @@ navigator.mediaDevices
       call.on("stream", (userVideoStream) => {
         addVideoStream(video, null, userVideoStream);
       });
-      console.log(call);
+      call.on('close', () => {
+        video.remove();
+      })
       peers[call.peer] = call;
-      console.log(call.peer);
     });
 
     socket.on("user-connected", (userId, userName) => {
@@ -80,6 +81,7 @@ const connectToNewUser = (userId, userName, stream) => {
   call.on('close', () => {
     video.remove();
   })
+  console.log(call);
   peers[userId] = call
 };
 
