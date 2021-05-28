@@ -87,6 +87,7 @@ const connectToNewUser = (userId, userName, stream) => {
   const call = peer.call(userId, stream);
   var conn = peer.connect(userId);
   conn.on('open', () => {
+    console.log("msg sent");
     conn.send(user);
   });
 
