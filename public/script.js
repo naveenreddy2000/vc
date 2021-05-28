@@ -29,6 +29,8 @@ var peer = new Peer(undefined, {
   port: "443",
 });
 
+console.log(peer);
+
 /*var peer = new Peer(undefined, {
   path: "/peerjs",
   host: "localhost",
@@ -59,7 +61,15 @@ navigator.mediaDevices
       call.on('close', () => {
         video.remove();
       })
-      peers[call.peer] = call;
+      var conn = peer.connect(call.peer);
+      conn.on('open', () => {
+        conn.on('data', (data) => {
+          console.log('Received', data);
+          const userName = data;
+          peers[call.peer] = { call, userName };
+        });
+      });
+
     });
 
     socket.on("user-connected", (userId, userName) => {
@@ -75,6 +85,11 @@ navigator.mediaDevices
 
 const connectToNewUser = (userId, userName, stream) => {
   const call = peer.call(userId, stream);
+  var conn = peer.connect(userId);
+  conn.on('open', () => {
+    conn.send(user);
+  });
+
   const video = document.createElement("video");
   call.on("stream", (userVideoStream) => {
     addVideoStream(video, null, userVideoStream);
@@ -83,7 +98,7 @@ const connectToNewUser = (userId, userName, stream) => {
     video.remove();
   })
   console.log(call);
-  peers[userId] = call
+  peers[userId] = { call, userName };
 };
 
 peer.on("open", (id) => {
