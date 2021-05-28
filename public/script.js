@@ -20,7 +20,7 @@ showChat.addEventListener("click", () => {
 });
 
 const user = prompt("Enter your name");
-var peers = {}
+var peers = {};
 
 //  for production
 var peer = new Peer(undefined, {
@@ -56,11 +56,14 @@ navigator.mediaDevices
       call.on("stream", (userVideoStream) => {
         addVideoStream(video, null, userVideoStream);
       });
+      call.on('close', () => {
+        video.remove();
+      })
     });
 
-    socket.on("user-connected", (userId, userName, curUsers) => {
+    socket.on("user-connected", (userId, userName) => {
       console.log(4);
-      connectToNewUser(userId, userName, stream, curUsers);
+      connectToNewUser(userId, userName, stream);
     });
 
     socket.on('user-disconnected', userId => {
@@ -68,11 +71,11 @@ navigator.mediaDevices
     })
   });
 
-const connectToNewUser = (userId, userName, stream, curUsers) => {
+const connectToNewUser = (userId, userName, stream) => {
   const call = peer.call(userId, stream);
   const video = document.createElement("video");
   call.on("stream", (userVideoStream) => {
-    addVideoStream(video, curUsers[userId], userVideoStream);
+    addVideoStream(video, null, userVideoStream);
   });
   call.on('close', () => {
     video.remove();
