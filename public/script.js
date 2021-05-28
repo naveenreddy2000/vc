@@ -69,7 +69,7 @@ navigator.mediaDevices
           peers[call.peer] = { call, userName };
         });
       });
-
+      console.log(peers);
     });
 
     socket.on("user-connected", (userId, userName) => {
