@@ -60,7 +60,7 @@ navigator.mediaDevices
           console.log('Incoming data', data);
           const userName = data;
           peers[call.peer] = { call, userName };
-          con.send('REPLY');
+          //con.send('REPLY');
         });
       });
       const video = document.createElement("video");
@@ -76,13 +76,13 @@ navigator.mediaDevices
         const userName = data;
         peers[call.peer] = { call, userName };
       });*/
-      console.log(peers);
+      //console.log(peers);
     });
 
     socket.on("user-connected", (userId, userName) => {
       console.log(4);
-      console.log(peers);
       connectToNewUser(userId, userName, stream);
+      console.log(peers);
     });
 
     socket.on('user-disconnected', userId => {
