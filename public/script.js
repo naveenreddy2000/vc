@@ -53,15 +53,16 @@ navigator.mediaDevices
       //console.log(call);
       console.log(3);
       console.log(call);
-      var tpeer = new Peer(call.peer);
-      tpeer.on('connection', function (con) {
+      call.answer(stream);
+      console.log('here');
+      peer.on('connection', function (con) {
         con.on('data', function (data) {
           console.log('Incoming data', data);
           const userName = data;
           peers[call.peer] = { call, userName };
+          con.send('REPLY');
         });
       });
-      call.answer(stream);
       const video = document.createElement("video");
       call.on("stream", (userVideoStream) => {
         addVideoStream(video, null, userVideoStream);
@@ -69,6 +70,7 @@ navigator.mediaDevices
       call.on('close', () => {
         video.remove();
       })
+
       /*peer.on('data', (data) => {
         console.log('Received ', data);
         const userName = data;
